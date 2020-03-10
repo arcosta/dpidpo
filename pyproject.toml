@@ -7,6 +7,10 @@ authors = ["Aurelio Costa <arcosta@gmail.com>"]
 [tool.poetry.dependencies]
 python = "^3.6"
 requests = "^2.23.0"
+elsapy = "^0.5.0"
+
+[tool.poetry.scripts]
+my-script = "dpidpo:main"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"

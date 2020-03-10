@@ -1,3 +1,4 @@
 *.lock
 *.config
 *.pyc
+*.egg-info
