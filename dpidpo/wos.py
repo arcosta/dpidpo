@@ -11,10 +11,11 @@ class WoS(object):
       reader = csv.DictReader(tsvfile, dialect='excel-tab')
       for row in reader:
         authors = row['AU'].split(';')
+        pub_year = row['PY']
         self.coauthors.add_nodes_from(authors)
         for u in authors:
           for v in authors:
             if u != v:
-              self.coauthors.add_edge(u, v)
+              self.coauthors.add_edge(u, v, weight=pub_year)
     nx.write_gexf(self.coauthors, "data\\wos.gexf")
 
