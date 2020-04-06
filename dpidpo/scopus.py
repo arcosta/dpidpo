@@ -29,10 +29,10 @@ class Scopus(object):
         return response.text
     
     def load_csv(self):
-        with open('data\\scopus.csv', newline='', encoding='utf-8') as csvfile:
+        with open('data\\scopus-full.csv', newline='', encoding='utf-8-sig') as csvfile:
             reader = csv.DictReader(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
             for row in reader:
-                authors = row['Author(s) ID'].split(';')
+                authors = row['Authors'].split(';')
                 self.coauthors.add_nodes_from(authors)
                 for u in authors:
                     for v in authors:
