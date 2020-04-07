@@ -1,6 +1,6 @@
-import csv
 import pandas as pd
 import numpy as np
+import re
 import json
 import csv
 
@@ -13,6 +13,7 @@ relation = {}
 data = {}
 place = ''
 authorSearched = ''
+words = ''
 
 
 # Importa arquivo .csv
@@ -50,8 +51,30 @@ for line in coauthorLine:
 
     dataf = pd.DataFrame(coauthorsArray)
 
-    coauthors_list = dataf.values.tolist()
-    relation = {authorSearched: coauthors_list}
+    coauthors_list_vector = dataf.values.tolist()
+    coauthors_list = coauthors_list_vector[0]
+    relation = {
+        "author": authorSearched,
+        "coauthors": coauthors_list[0]
+    }
 
+
+# Cria .json com autor->coautores  [Podemos usar para alimentar wikidata]
 with open('author_coauthors.txt', 'w') as outfile:
     json.dump(relation, outfile)
+
+# Tratamento de dados para criar rede de autor-coautores (csv)
+coauthVector = coauthors_list[0].split(';')
+
+
+f = open('gephi.csv', 'w')
+
+with f:
+
+    writer = csv.writer(f)
+
+    for coAuth in coauthVector:
+        auth = "%s" % authorSearched
+        nms = [[str(auth), coAuth]]
+        for row in nms:
+            writer.writerow(row)
