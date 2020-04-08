@@ -19,6 +19,7 @@ for k in range(lastRow):
     authorsVector = []
     authorsListId = []
     authorsAffiliation = []
+    relationVector = []
 
     # Desmembra a coluna de "Authors" e cria um vetor com os autores
     authLine = scopus_csv["Authors"][k]
@@ -28,15 +29,27 @@ for k in range(lastRow):
 
     # Atribui um id e afiliação para cada autor || nome_autor | id_autor | affil_autor||
     for l in range(len(authorsVector)):
-        print(l)
         author_id += 1
         authorsListId.append([authorsVector[l], author_id])
-
-    print("VALOR", authorsListId)
 
     # Escreve .cvs de nós
     f = open('nodes.csv', 'a')
     with f:
         writer = csv.writer(f)
         for row in authorsListId:
+            writer.writerow(row)
+
+    # Cria o relacionamento de todos com todos para a produção
+    for j in range(len(authorsVector)):
+        for item in authorsVector:
+            if(authorsVector[j] != item and item != ''):
+                relationVector.append([authorsVector[j], item])
+        authorsVector[j] = ''
+
+    print(relationVector)
+
+    f = open('gephi.csv', 'a')
+    with f:
+        writer = csv.writer(f)
+        for row in relationVector:
             writer.writerow(row)
