@@ -10,7 +10,7 @@ teste = ["A", "B", "C"]
 teste2 = ["Paulo", "Aurelio", "Dalton", "André", "Ayrton", "Julio", "Aline"]
 author_id = 0
 # Importa arquivo .csv
-scopus_csv = pd.read_csv('teste.csv')
+scopus_csv = pd.read_csv('scopus.csv')
 scopus_df = pd.DataFrame(scopus_csv)
 
 lastRow = len(scopus_csv)
@@ -46,9 +46,7 @@ for k in range(lastRow):
                 relationVector.append([authorsVector[j], item])
         authorsVector[j] = ''
 
-    print(relationVector)
-
-    f = open('gephi.csv', 'a')
+    f = open('edges.csv', 'a')
     with f:
         writer = csv.writer(f)
         for row in relationVector:
