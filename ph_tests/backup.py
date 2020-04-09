@@ -6,8 +6,11 @@ import numpy as np
 
 authorsAffiliation = []
 relationVector = []
+affiliationVector = []
+affiliationColumn = []
 unb = [
-    "Universidade de Brasilia", "UnB", "Universidade de Brasília", "University of Brasilia", "University of Brasília", "Universidáde de Brasília"]
+    "Universidade de Brasilia", "UnB", "Universidade de Brasília", "University of Brasilia"]
+
 author_id = 0
 # Importa arquivo .csv
 scopus_csv = pd.read_csv('teste.csv')
@@ -15,14 +18,11 @@ scopus_df = pd.DataFrame(scopus_csv)
 
 lastRow = len(scopus_csv)
 
-
 for k in range(lastRow):
     authorsVector = []
     authorsListId = []
     authorsAffiliation = []
     relationVector = []
-    affiliationVector = []
-    affiliationColumn = []
 
     # Desmembra a coluna de "Authors" e cria um vetor com os autores
     authLine = scopus_csv["Authors"][k]
@@ -45,16 +45,16 @@ for k in range(lastRow):
             affiliationColumn.insert(j, 0)
         j += 1
 
-    # Atribui um id e afiliação para cada autor || nome_autor | id_autor | affil_autor||
+        # Atribui um id e afiliação para cada autor || nome_autor | id_autor | affil_autor||
     for l in range(len(authorsVector)):
         author_id += 1
         authorsListId.append(
-            [author_id, authorsVector[l], affiliationColumn[l]])
+            [author_id, authorsVector[l]])
 
     print(authorsListId)
 
-    # Escreve .cvs de nós
-    f = open('nodes.csv', 'a')
+    # Escreve .cvs de nós || id_author | author ||
+    f = open('nodes.csv', 'w')
     with f:
         writer = csv.writer(f)
         for row in authorsListId:
@@ -67,6 +67,7 @@ for k in range(lastRow):
                 relationVector.append([authorsVector[j], item])
         authorsVector[j] = ''
 
+    # Escreve o .csv de arestas || author | coauthor ||
     f = open('edges.csv', 'w')
     with f:
         writer = csv.writer(f)
