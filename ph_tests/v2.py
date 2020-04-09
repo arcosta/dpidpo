@@ -15,14 +15,15 @@ scopus_df = pd.DataFrame(scopus_csv)
 
 lastRow = len(scopus_csv)
 
+authorsListId = []
+relationVector = []
+affiliationColumn = []
+
 
 for k in range(lastRow):
     authorsVector = []
-    authorsListId = []
     authorsAffiliation = []
-    relationVector = []
     affiliationVector = []
-    affiliationColumn = []
 
     # Desmembra a coluna de "Authors" e cria um vetor com os autores
     authLine = scopus_csv["Authors"][k]
@@ -51,15 +52,6 @@ for k in range(lastRow):
         authorsListId.append(
             [author_id, authorsVector[l], affiliationColumn[l]])
 
-    print(authorsListId)
-
-    # Escreve .cvs de nós
-    f = open('nodes.csv', 'a')
-    with f:
-        writer = csv.writer(f)
-        for row in authorsListId:
-            writer.writerow(row)
-
     # Cria o relacionamento de todos com todos para a produção
     for j in range(len(authorsVector)):
         for item in authorsVector:
@@ -67,8 +59,16 @@ for k in range(lastRow):
                 relationVector.append([authorsVector[j], item])
         authorsVector[j] = ''
 
-    f = open('edges.csv', 'w')
-    with f:
-        writer = csv.writer(f)
-        for row in relationVector:
-            writer.writerow(row)
+
+# Escreve .cvs de nós
+f = open('nodes.csv', 'a')
+with f:
+    writer = csv.writer(f)
+    for row in authorsListId:
+        writer.writerow(row)
+
+f = open('edges.csv', 'a')
+with f:
+    writer = csv.writer(f)
+    for row in relationVector:
+        writer.writerow(row)

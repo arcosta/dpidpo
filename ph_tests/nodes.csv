@@ -1,8 +1,451 @@
-1,Amato D.A.,1
-2,Korre M.,0
-3, Loh K.,0
-4, Eshleman E.J.,0
-5, Lessa F.S.,0
-6, Porto L.G.,1
-7, Christophi C.A.,0
-8, Kales S.N.,0
+id,author,unb
+1,Korre M.,0
+2, Loh K.,0
+3, Eshleman E.J.,0
+4, Lessa F.S.,0
+5, Porto L.G.,1
+6, Christophi C.A.,0
+7, Kales S.N.,0
+8,Ribeiro G.,0
+9, Jr.,0
+10, Dos Santos C.G.S.,0
+11, Lanza F.,0
+12, Reis J.,0
+13, Vaccarezza F.,0
+14, Diniz C.,0
+15, Miranda D.L.P.,0
+16, De Araújo R.F.,0
+17, Cunha G.M.,0
+18, De Carvalho C.M.M.,0
+19, Fonseca E.O.L.,0
+20, Dos Santos R.F.,0
+21, De Sousa O.M.F.,0
+22, Reis R.B.,1
+23, De Araújo W.N.,1
+24, Gurgel-Goncąlves R.,0
+25, Dos Reis M.G.,0
+26,Ferreira Portela J.,1
+27, Rudrigues de Souza J.P.,1
+28, de Sousa Tonhá M.,1
+29, Elias Bernardi J.V.,1
+30, Garnier J.,1
+31, Rodrigues SouzaDe J.,1
+32,Oliveira A.R.,1
+33,Callisto M.,0
+34, Solar R.,0
+35, Silveira F.A.O.,0
+36, Saito V.S.,0
+37, Hughes R.M.,0
+38, Fernandes G.W.,0
+39, Gonçalves-Júnior J.F.,1
+40, Leitão R.P.,0
+41, Massara R.L.,0
+42, Macedo D.R.,0
+43, Neves F.S.,0
+44, Alves C.B.M.,0
+45,Resende R.S.,0
+46, Tello Sáenz C.A.,0
+47, Pereira L.A.S.,0
+48, Dantas E.L.,1
+49,dos Santos G.,0
+50, Figueiredo G.M.,1
+51, Severo U.B.,0
+52,Nascimento-Viana J.B.,0
+53, Alcántara-Hernández R.,0
+54, Oliveira-Barros E.,0
+55, Castello Branco L.A.,0
+56, Feijó P.R.,0
+57, Soares Romeiro L.A.,1
+58, Nasciutti L.E.,0
+59, Noël F.,0
+60, García-Sáinz J.A.,0
+61, Silva C.L.M.,0
+62,Satgé F.,0
+63, Hussain Y.,1
+64, Xavier A.,1
+65, Zolá R.P.,0
+66, Salles L.,1
+67, Timouk F.,0
+68, Seyler F.,0
+69, Garnier J.,1
+70, Frappart F.,0
+71, Bonnet M.-P.,0
+72,Gomes B.R.B.,1
+73, de Sousa G.L.S.,1
+74, Ott D.,0
+75, Murgott J.,0
+76, de Sousa M.V.,1
+77, de Souza P.E.N.,1
+78, Roth J.,0
+79, Veiga-Souza F.H.,1
+80,Silva P.E.,1
+81, De Cássia Marqueti R.,1
+82, Livino-De-Carvalho K.,0
+83, De Araujo A.E.T.,0
+84, Castro J.,0
+85, Da Silva V.M.,0
+86, Vieira L.,0
+87, Souza V.C.,1
+88, Dantas L.O.,0
+89, Cipriano G.,1
+90, Jr.,1
+91, Nóbrega O.T.,0
+92, Babault N.,1
+93, Durigan J.L.Q.,1
+94,Oliveira C.M.,0
+95, Vieira E.A.,0
+96, Fialho J.F.,0
+97, Frizzas M.R.,1
+98,Escobar I.A.,0
+99, Dotti F.L.,0
+100, Alchieri E.,1
+101, Pedone F.,0
+102,Cajueiro D.O.,1
+103, Mundim F.N.,0
+104, Martins J.I.F.,0
+105, Sakowski P.A.M.,0
+106, Andrade R.F.S.,0
+107,De Castanheira P.S.,0
+108, Didham R.K.,0
+109, Vink C.J.,0
+110, Framenau V.W.,0
+111,Drüke M.,0
+112, Forke M.,0
+113, Bloh W.V.,0
+114, Sakschewski B.,0
+115, Cardoso M.,0
+116, Bustamante M.,1
+117, Kurths J.,0
+118, Thonicke K.,0
+119,Alvim E.A.C.C.,1
+120, Kisaka T.B.,1
+121, Nardoto G.B.,1
+122, de Mendonça-Galvão L.,0
+123, Fonseca B.M.,0
+124, Bustamante M.M.C.,1
+125,Silva E.D.,0
+126, de Albuquerque J.C.,0
+127, do Ó J.M.,1
+128,Li Z.,0
+129, Feng Y.,0
+130, Gurgel H.,1
+131, Xu L.,0
+132, Dessay N.,0
+133, Gong P.,0
+134,De Souza Costa Pedroso D.,1
+135, Ladeira M.,1
+136, De Paulo Faleiros T.,1
+137,Da Silva Santos M.,1
+138, Ladeira M.,1
+139, Van Erven G.C.G.,1
+140, Luiz Da Silva G.,1
+141,Da Fonseca Silveira R.,1
+142, Holanda M.,1
+143, De Carvalho Victorino M.,1
+144, Ladeira M.,1
+145,Rosario R.,1
+146, Peixoto E.,1
+147,da CRUZ M.R.G.,1
+148, Leite Y.J.B.S.,1
+149, Marques J.L.,1
+150, Pavelquesi S.L.S.,1
+151, Oliveira L.R.A.,1
+152, da SILVA I.C.R.,1
+153, Orsi D.C.,1
+154,Figueiredo G.M.,1
+155, Furtado M.F.,1
+156, Ruviaro R.,1
+157,Barbosa L.M.,1
+158, Murta S.G.,1
+159,Martins H.F.,1
+160, de Oliveira A.C.,1
+161, Jr.,1
+162, Canedo E.D.,1
+163, Kosloski R.A.D.,1
+164, Paldês R.A.,1
+165, Oliveira E.C.,1
+166,Amato D.A.,1
+167,Da Costa A.C.C.,1
+168, Vieira N.N.P.,1
+169, Vasques C.I.,1
+170, Ferreira E.B.,1
+171, Guerra E.N.S.,1
+172, Dos Reis P.E.D.,1
+173,Paula F.L.O.,1
+174, Castro L.L.,1
+175, Junior L.A.R.,1
+176, Júnior R.T.S.,1
+177, Silva G.M.,1
+178, Neto P.H.O.,1
+179,Fischer M.M.,1
+180, de Sousa L.E.,1
+181, Luiz e Castro L.,1
+182, Ribeiro L.A.,1
+183, Jr.,1
+184, de Sousa R.T.,1
+185, Jr.,1
+186, Magela e Silva G.,1
+187, de Oliveira Neto P.H.,1
+188,Lima K.A.L.,1
+189, Cunha W.F.,1
+190, Monteiro F.F.,1
+191, Enders B.G.,1
+192, Jr M.L.P.,1
+193, Jr L.A.R.,1
+194,da Costa Urtiga C.,1
+195, de Araújo Silva-Cardoso I.M.,1
+196, Araujo Figueiredo S.,1
+197,Meneses L.Y.H.,1
+198, Silva A.M.A.,1
+199, Alfaro S.C.A.,1
+200,Chaves H.M.L.,1
+201, Lorena D.R.,1
+202,Araujo Neto J.P.,1
+203, Pianto D.M.,1
+204, Ralha C.G.,1
+205,dos Santos P.V.R.,1
+206, Bessa E.,1
+207,Acciarri C.,1
+208, Shumyatsky P.,1
+209,Rasmussen L.L.,1
+210, de Farias M.M.,1
+211,Nery V.D.F.,1
+212, Franco K.S.,1
+213, Neiva E.R.,1
+214,Martarello R.D.A.,1
+215, Cunha L.,1
+216, Cardoso S.L.,1
+217, de Freitas M.M.,1
+218, Silveira D.,1
+219, Fonseca-Bazzo Y.M.,1
+220, Homem-de-Mello M.,1
+221, Filho E.X.F.,1
+222, Magalhães P.O.,1
+223,Lima V.G.F.,0
+224, Regattieri N.A.T.,0
+225, Pompeu M.F.,0
+226, Costa I.M.C.,0
+227,Dórea J.G.,1
+228,Barros De Jesus M.,0
+229, Luiz Da Silva G.,1
+230, Ladeira M.,1
+231, Van Erven G.C.G.,1
+232,Silva E.D.,0
+233, Carvalho M.L.M.,0
+234, Silva K.,0
+235, Gonçalves J.V.,1
+236,Poppiel R.R.,1
+237, Lacerda M.P.C.,0
+238, Safanelli J.L.,1
+239, Rizzo R.,0
+240, Oliveira M.P.,0
+241, Novais J.J.,0
+242, Demattê J.A.M.,0
+243,Da Silva R.C.,1
+244, Ishioka I.S.K.,1
+245, Cappelletti C.,0
+246, Battistini S.,1
+247, Borges R.A.,1
+248,Braz-De-Melo H.A.,1
+249, Pasquarelli-do-Nascimento G.,1
+250, Corrêa R.,1
+251, das Neves Almeida R.,1
+252, de Oliveira Santos I.,1
+253, Prado P.S.,0
+254, Picolo V.,1
+255, de Bem A.F.,1
+256, Pizato N.,1
+257, Magalhães K.G.,1
+258,Carvalho M.M.,1
+259, Garcia-Luna-Aceves J.J.,0
+260,Garcez C.C.R.,1
+261, de Lima D.V.,1
+262, Miranda R.K.,1
+263, Mendonça F.,1
+264, da Costa J.P.C.L.,1
+265, de Almeida A.L.F.,0
+266, de Sousa R.T.,1
+267, Jr.,1
+268,Malvar S.,0
+269, Carmo B.S.,0
+270, Cunha F.R.,1
+271,Arcoya D.,0
+272, Rezende M.C.M.,1
+273, Silva E.A.B.,1
+274,Reis E.C.,0
+275, Leal V.N.C.,0
+276, da Silva L.T.,0
+277, dos Reis M.M.L.,1
+278, Argañaraz E.R.,1
+279, Oshiro T.M.,0
+280, Pontillo A.,0
+281,Shayani L.A.,1
+282, da Cruz C.J.,1
+283, Porto L.G.G.,1
+284, Molina G.E.,1
+285,Lima R.C.D.A.,1
+286, Silveira Neto R.D.M.,0
+287,dos Santos K.B.,0
+288, Murta S.G.,1
+289, do Amaral Vinha L.G.,1
+290, de Deus J.S.,1
+291,Marques D.,1
+292, Trojovský P.,0
+293,de Melo C.B.,1
+294, Cançado A.L.F.,1
+295, Rodrigues G.N.,1
+296,Teotônio I.M.S.N.,1
+297, Dias N.,1
+298, Hagström-Bex L.,1
+299, Nitz N.,1
+300, Francisco A.F.,0
+301, Hecht M.,1
+302,Rodrigues R.L.,0
+303, Menezes G.D.L.,0
+304, Saivish M.V.,0
+305, Costa V.G.D.,1
+306, Pereira M.,0
+307, Moreli M.L.,0
+308, Silva R.A.D.,0
+309,de Torres H.M.,0
+310, Evangelista K.,0
+311, de Torres É.M.,0
+312, Estrela C.,0
+313, Figueiredo P.T.D.S.,0
+314, Valladares-Neto J.,1
+315, Silva M.A.G.,0
+316,Araujo R.A.,1
+317, Dávila-Fernández M.J.,0
+318, Moreira H.N.,1
+319,Hegel C.G.Z.,1
+320, Santos L.R.,1
+321, Marinho J.R.,0
+322, Marini M.Â.,1
+323,de Araujo Isaias Muller J.,0
+324, Mortari M.R.,1
+325, Moslaves I.S.B.,0
+326, Toffoli-Kadri M.C.,0
+327,Jongberg S.,0
+328, Racanicci A.M.C.,1
+329, Skibsted L.H.,0
+330,Van Dyke M.C.C.,0
+331, Teixeira M.M.,1
+332, Barker B.M.,0
+333,Favara G.M.,0
+334, Camelo-García V.M.,0
+335, Nagata T.,1
+336, Silva J.M.F.,1
+337, Saito M.,0
+338, Rezende J.A.M.,0
+339, Salaroli R.B.,0
+340, Kitajima E.W.,0
+341,Cioletti L.,1
+342, Lopes A.O.,0
+343,Bastos R.,1
+344, Rocco N.R.,1
+345, Vieira E.R.,0
+346,Traina A.J.M.,0
+347, Brinis S.,0
+348, Pedrosa G.V.,1
+349, Avalhais L.P.S.,0
+350, Traina C.,0
+351, Jr.,1
+352,Bragança H.,1
+353, Riche F.,1
+354, Qu F.,1
+355, Lopez-Richard V.,0
+356, Marques G.E.,0
+357,Lima R.M.,1
+358, de Oliveira R.J.,1
+359, Raposo R.,1
+360, Neri S.G.R.,1
+361, Gadelha A.B.,1
+362,Rezende M.C.M.,1
+363, Sánchez-Aguilar P.M.,0
+364, Silva E.A.B.,1
+365,Schmitz Wortmeyer D.,0
+366, Branco A.U.,1
+367,Fleury M.P.,0
+368, Santos E.C.G.,0
+369, Lins Da Silva J.,0
+370, Palmeira E.M.,1
+371,Costa K.S.F.,1
+372, Fernandes D.D.S.,1
+373, Paula R.A.P.,1
+374, Guarda L.E.D.A.,1
+375, Daré M.F.,0
+376, Castral T.C.,0
+377, Ribeiro L.M.,1
+378,de Andrade E.B.,0
+379, Leite J.R.S.A.,1
+380, Weber L.N.,0
+381,Probst L.F.,0
+382, Pucca Junior G.A.,1
+383, Pereira A.C.,0
+384, De Carli A.D.,0
+385,Martínez R.T.,0
+386, de Almeida M.M.S.,1
+387, Rodriguez R.,0
+388, Cayetano X.,0
+389, de Oliveira A.S.,1
+390, Silva J.M.F.,1
+391, Melo F.L.,1
+392, Resende R.O.,1
+393,Lopes F.V.,1
+394, Lima P.,0
+395, Ribeiro J.P.G.,1
+396, Honorato T.R.,1
+397, Silva K.M.,1
+398, Leite E.J.S.,1
+399, Jr.,0
+400, Neves W.L.A.,0
+401, Rocha G.,0
+402,Carneiro A.C.C.,0
+403, Flores E.P.,1
+404, da Silva Barros R.,0
+405, de Souza C.B.A.,0
+406,Souza S.R.S.D.,0
+407, Silva T.C.,1
+408, Almeida C.E.D.,0
+409,Corro A.M.V.,0
+410, Dias D.G.,0
+411, Riveros C.M.C.,1
+412,Schneider R.,0
+413, Athias D.,0
+414, Bugarin M.,1
+415,Motta F.N.,1
+416, Azevedo C.D.S.,1
+417, Neves B.P.,1
+418, Araújo C.N.D.,1
+419, Grellier P.,0
+420, Santana J.M.D.,1
+421, Bastos I.M.D.,1
+422,Rego E.C.S.,1
+423, Pinheiro T.D.M.,1
+424, Antonino J.D.,1
+425, Alves G.S.C.,1
+426, Cotta M.G.,1
+427, Fonseca F.C.D.A.,1
+428, Miller R.N.G.,1
+429,Lopes S.C.,0
+430, Silva R.A.,0
+431, Novais M.V.,0
+432, Coelho L.D.,0
+433, Ferreira L.A.,0
+434, Souza P.E.,1
+435, Tedesco A.,0
+436, Azevedo R.B.,1
+437, Aguiar M.G.,0
+438, Oliveira M.C.,0
+439,Kurizky P.S.,1
+440, Gomes C.M.,1
+441, Cesetti M.V.,1
+442, Martins G.A.,0
+443, Regattieri N.A.T.,0
+444, Marianelli F.F.,0
+445, Sevilha Santos L.,1
+446, Medeiros Silva V.,1
+447, de Paula N.A.,0
+448, Frade M.A.C.,0
+449, da Silva E.F.,1
+450, da Mota L.M.H.,1
