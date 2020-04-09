@@ -9,8 +9,9 @@ relationVector = []
 unb = [
     "Universidade de Brasilia", "UnB", "Universidade de Brasília", "University of Brasilia", "University of Brasília", "Universidáde de Brasília"]
 author_id = 0
+edge_id = 0
 # Importa arquivo .csv
-scopus_csv = pd.read_csv('teste.csv')
+scopus_csv = pd.read_csv('scopus.csv')
 scopus_df = pd.DataFrame(scopus_csv)
 
 lastRow = len(scopus_csv)
@@ -50,13 +51,15 @@ for k in range(lastRow):
     for l in range(len(authorsVector)):
         author_id += 1
         authorsListId.append(
-            [author_id, authorsVector[l], affiliationColumn[l]])
+            [authorsVector[l], authorsVector[l], affiliationColumn[l], author_id, 71])
 
     # Cria o relacionamento de todos com todos para a produção
     for j in range(len(authorsVector)):
         for item in authorsVector:
             if(authorsVector[j] != item and item != ''):
-                relationVector.append([authorsVector[j], item])
+                edge_id += 1
+                relationVector.append(
+                    [authorsVector[j], authorsVector[j], item])
         authorsVector[j] = ''
 
 
