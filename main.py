@@ -7,8 +7,10 @@ def main():
 
     #print(scopus.search("Dalton Martins"))
     #scopus.load_csv()
+    print(" *** Loading data ***")
     wos.load_csv()
 
+    print(" *** Generating graph file ***")
     wos.write_gexf()
 
 
