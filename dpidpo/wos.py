@@ -15,31 +15,50 @@ class WoS(object):
     pass
 
   def load_csv(self):
-    logging.debug("Carregando os seguintes arquivos ",glob.glob(os.path.join('data', "savedrecs-*.txt")))
+    logging.debug("Carregando os seguintes arquivos ",
+      " ".join(glob.glob(os.path.join('data', "savedrecs-4*.txt")))
+      )
     df = pd.concat(
       map(
-        lambda file: pd.read_csv(file, sep='\t', header=0, encoding='utf-8-sig', index_col=False, dtype=str, na_values="", keep_default_na=False, na_filter=False), 
-        glob.glob(os.path.join('data', "savedrecs-*.txt"))
+        lambda file: pd.read_csv(file, 
+                        sep='\t', 
+                        header=0, 
+                        encoding='utf-8-sig', 
+                        index_col=False, 
+                        dtype=str, 
+                        na_values="", 
+                        keep_default_na=False, 
+                        na_filter=False), 
+        glob.glob(os.path.join('data', "savedrecs-4*.txt"))
         )
-        )
+      )
 
     affiliations = WoS.resolv_affiliation(df, "C1")
+    aliases_index = WoS.create_aliases_index()
 
     logging.debug("Processing authorship")
     for row in df[['AF', 'PY']].values:
       
-      pub_year = row[1]
-      authors = list(map(str.strip, row[0].split(';')))        
+      pub_year = int(row[1])
+      authors = list(map(str.strip, row[0].split(';'))) 
+      start = pub_year
+      stop = pub_year       
         
       for author in authors:
+        author_label = aliases_index.get(author, author)
         try:
           aff = affiliations[author]
-          if aff.find('Univ Brasilia') >=0:
-            self.coauthors.add_node(author, start = str(pub_year), stop = 2021, affiliation=aff, color='#00FF00')
+          
+          if self.coauthors.has_node(author):
+            start = self.coauthors.node[author]['start'] if pub_year > self.coauthors.node[author]['start'] else pub_year
+            stop = self.coauthors.node[author]['stop'] if pub_year < self.coauthors.node[author]['start'] else pub_year
           else:
-            self.coauthors.add_node(author, start = str(pub_year), stop = 2021, affiliation=aff)
+            if aff.find('Univ Brasilia') >=0:
+              self.coauthors.add_node(author, label = author_label, start = start, stop = stop, affiliation=aff, color='#00FF00')
+            else:
+              self.coauthors.add_node(author, label = author_label, start = start, stop = stop, affiliation=aff)
         except KeyError:
-          self.coauthors.add_node(author, start = str(pub_year), stop = 2021)
+          self.coauthors.add_node(author, label = author_label, start = start, stop = stop)
 
         for u in authors:
           for v in authors:
@@ -50,6 +69,20 @@ class WoS(object):
   def write_gexf(self, outfile="data\\wos.gexf"):
     logging.debug(f"Saving network to {outfile}")
     nx.write_gexf(self.coauthors, outfile)
+
+  @staticmethod
+  def create_aliases_index():
+    result = dict()
+    df2 = pd.read_csv("D:\\devel\\dpidpo\\data\\Coleta Outros Nomes  - Lattes (DPI_DPO) - Página1.csv",
+              header=0,
+              index_col=False
+              )
+    for row in df2[['Nome','Nome em Citações Bibliográficas']].values:
+      name = row[0]
+      aliases = row[1].split(';')
+      for alias in aliases:
+        result[alias] = name
+    return result
 
   @staticmethod
   def resolv_affiliation(df, column_aff):
