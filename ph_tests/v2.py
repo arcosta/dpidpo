@@ -4,10 +4,16 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 
-authorsAffiliation = []
-relationVector = []
+authorsAffiliation = list()
+relationVector = list()
 unb = [
-    "Universidade de Brasilia", "UnB", "Universidade de Brasília", "University of Brasilia", "University of Brasília", "Universidáde de Brasília"]
+    "Universidade de Brasilia",
+    "UnB",
+    "Universidade de Brasília",
+    "University of Brasilia",
+    "University of Brasília",
+    "Universidáde de Brasília"
+]
 author_id = 0
 edge_id = 0
 # Importa arquivo .csv
@@ -16,9 +22,9 @@ scopus_df = pd.DataFrame(scopus_csv)
 
 lastRow = len(scopus_csv)
 
-authorsListId = []
-relationVector = []
-affiliationColumn = []
+authorsListId = list()
+relationVector = list()
+affiliationColumn = list()
 
 
 for k in range(lastRow):
