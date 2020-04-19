@@ -12,8 +12,8 @@ noMatch = 0
 j = 0
 
 # Importa arquivo .csv e converte em dataframe
-lattes_csv = pd.read_csv('lattes.csv')
-scopus_csv = pd.read_csv('scopus.csv')
+lattes_csv = pd.read_csv('./csv/lattes.csv')
+scopus_csv = pd.read_csv('./csv/scopus.csv')
 
 scopus = pd.DataFrame(scopus_csv)
 
@@ -41,17 +41,18 @@ for line in lattes["Nome em Citações Bibliográficas"]:
 # Faz a desambiguação com base no lattes
     i = 0
     for author in author_vector:
-        if any(word in author for word in lattes_table[j][1]):
-            print(author, lattes_table[j][1])
-            author_vector[i] = lattes_table[j][0].values
-            match += 1
-        else:
-            noMatch += 1
+        for abreviacao in lattes_table[j][1]:
+            if author in abreviacao:
+                author_vector[i] = lattes_table[j][0].values
+                match += 1
+            else:
+                noMatch += 1
+
+            j += 1
         i += 1
-    j += 1
 
 print(match, noMatch)
-f = open("data_frame_lattes.csv", "w")
+f = open("./csv/data_frame_lattes.csv", "w")
 with f:
     writer = csv.writer(f)
     for row in author_vector:
