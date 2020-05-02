@@ -1,7 +1,9 @@
 from dpidpo.scopus import Scopus
 from dpidpo.wos import WoS
+from datetime import datetime
 
 def main():
+    start_time = datetime.now()
     #scopus = Scopus()
     wos = WoS()
 
@@ -12,6 +14,10 @@ def main():
 
     print(" *** Generating graph file ***")
     wos.write_gexf()
+
+    final_time = datetime.now()
+
+    print("Time elapsed: ", final_time - start_time)
 
 
 if __name__ == "__main__":
