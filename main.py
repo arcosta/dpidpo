@@ -1,4 +1,4 @@
-from dpidpo.scopus import Scopus
+#from dpidpo.scopus import Scopus
 from dpidpo.wos import WoS
 from datetime import datetime
 
@@ -12,8 +12,11 @@ def main():
     print(" *** Loading data ***")
     wos.load_csv()
 
+    #wos.consolidate_authors()
+
     print(" *** Generating graph file ***")
-    wos.write_gexf()
+    #wos.write_gexf()
+    wos.save_to_csv()
 
     final_time = datetime.now()
 

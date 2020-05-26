@@ -1,13 +1,18 @@
 import pandas as pd
-import networkx as nx
 import glob
 import os
 import re
 import logging
 import sys
 import time
+import csv
+import pickle
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+
+class excel_semicolon(csv.excel):
+    delimiter = ';'
+    quoting = csv.QUOTE_NONNUMERIC
 
 def timeit(method):
     def timed(*args, **kw):
@@ -26,14 +31,32 @@ def timeit(method):
 
 class WoS(object):
   def __init__(self):
-    self.coauthors = nx.Graph()
+    self.pd_authors = 'AF'
+    self.pd_affiliation = 'C1'
+    self.pd_year = 'PY'
 
-  def search(self, query=''):
-    pass
+    self.df_rel = list()
+    self.df_author = list()
+    
+  def match(self, query=''):
+    result = [name for name in self.generate_abbreviations(query) if self.coauthors.has_node(name)]
+
+    if len(result) == 0:
+      return query
+    else:
+      return result[0]
 
   def load_csv(self):
+    if os.path.exists('rels.pickle') and os.path.exists('author.pickle'):
+      logging.info("Carregando lista de autores e relacionamentos do cache")
+      with open('rels.pickle', 'rb') as rels_file:
+        self.df_rel = pickle.load(rels_file)
+      with open('authors.pickle', 'rb') as authors_file:
+        self.df_author = pickle.load(authors_file)
+      return
+
     logging.debug(
-      "Carregando os seguintes arquivos "+str(glob.glob(os.path.join('data', "savedrecs-*.txt")))
+      "Carregando os seguintes arquivos "+str(glob.glob(os.path.join('data', "savedrecs-3*.txt")))
       )
     df = pd.concat(
       map(
@@ -46,81 +69,162 @@ class WoS(object):
                         na_values="", 
                         keep_default_na=False, 
                         na_filter=False), 
-        glob.glob(os.path.join('data', "savedrecs-*.txt"))
+        glob.glob(os.path.join('data', "savedrecs-3*.txt"))
         )
       )      
       
     logging.debug(f"DataFrame shape: {df.shape}")
 
     logging.debug("Resolvendo filiações")
-    affiliations = WoS.resolv_affiliation(df, "C1")
+    affiliations = WoS.resolv_affiliation(df, self.pd_affiliation)
 
     logging.debug("Criando índice de apelidos")
     aliases_index = WoS.create_aliases_index()
 
     logging.debug("Processando autoria de publicações")
-    for row in df[['AF', 'PY']].values:
+    df_publications = df[[self.pd_authors, self.pd_year]]
+    del df
+
+    author_dict = {}
+    rels = list()
+    author_idx = 1
+    for row in df_publications.values:
       pub_year = 0  
       try:
         pub_year = int(row[1])
       except ValueError:
         pub_year = 1950
+      
       authors = list(map(str.strip, row[0].split(';'))) 
       start = pub_year
       stop = pub_year       
         
       for author in authors:
+        if author not in author_dict.keys():
+          author_dict[author] = author_idx
+          author_idx += 1
+
+        current_author = author_dict[author]
         author_label = aliases_index.get(author, author)
+
+
+        if author_label != author:
+          logging.debug("Match de alias !!!")
         try:
           aff = affiliations[author]
-          
-          if self.coauthors.has_node(author):
-            start = self.coauthors.node[author]['spells'][0][0] if pub_year > self.coauthors.node[author]['spells'][0][0] else pub_year
-            stop = self.coauthors.node[author]['spells'][0][1] if pub_year < self.coauthors.node[author]['spells'][0][1] else pub_year
-            self.coauthors.node[author]['numpub'] = self.coauthors.node[author]['numpub'] + 1
+          if aff.find('Univ Brasilia') >=0:
+            self.df_author.append(
+              {'Id':current_author,
+              'Label': author,
+              'also_known_as': list(), 
+                'start':start,
+                'stop':stop,
+                'affiliation':aff,
+                'color': '#00FF00'}
+                )
           else:
-            if aff.find('Univ Brasilia') >=0:
-              self.coauthors.add_node(author, label = author_label, numpub=1, spells=[(start, stop)], affiliation=aff, color='#00FF00')
-            else:
-              self.coauthors.add_node(author, label = author_label, numpub=1, spells=[(start, stop)], affiliation=aff)
+            self.df_author.append(
+              {'Id':current_author,
+              'Label': author, 
+              'also_known_as': list(),
+                'start':start,
+                'stop':stop,
+                'affiliation':aff,
+                'color': '#0000FF'}
+                )
         except KeyError:
-          self.coauthors.add_node(author, label = author_label, numpub=1, spells=[(start, stop)])
+          self.df_author.append(
+              {'Id':current_author,
+              'Label': author, 
+              'also_known_as': list(),
+                'start':start,
+                'stop':stop,
+                'affiliation':'',
+                'color': '#000000'}
+                )
 
-      for u in authors:
+      for author in authors:
         for v in authors:
-          if u != v:
-            if self.coauthors.has_edge(u,v) is False:
-              self.coauthors.add_edge(u, v, spells=[(start, stop)])
-            else:
-              spells = set(self.coauthors[u][v]['spells'])
-              spells.add((start, stop))
-              self.coauthors[u][v]['spells'] = spells
+          if author != v:
+            self.df_rel.append({'source':author_dict[author], 'target': author_dict[v], 'Time Interval': [start, stop]})
+    with open('rels.pickle', 'wb') as rels_file:
+      pickle.dump(self.df_rel, rels_file)
+    with open('authors.pickle', 'wb') as authors_file:
+      pickle.dump(self.df_author, authors_file)
 
+  @timeit
+  def consolidate_authors(self):
+    logging.debug("Consolidating authors ...")
+    for author in self.df_author:
+      for author_inner in self.df_author:
+        if (self.comparacao_compacta(author['Label'], author_inner['Label'])):
+          author['also_known_as'].append(author_inner['Label'])
+          if author_inner['start'] < author['start']:
+            author['start'] = author_inner['start']
+          if author_inner['stop'] > author['stop']:
+            author['stop'] = author_inner['stop']
+          self.df_author.remove(author_inner)
+    
+    logging.debug("Updating relationships")
+    #Atualiza o nome do autores nos relacionamentos
+    for rel in self.df_rel:
+      for author in self.df_author:
+        if rel['source'] in author['also_known_as']:
+          rel['source'] = author['Id']
+        if rel['target'] in author['also_known_as']:
+          rel['target'] = author['Id']
+
+  @timeit
+  def save_to_csv(self):
+    with open("data\\wos-author.csv", 'w', encoding='utf-8-sig', newline='') as csvfile:
+      writer = csv.DictWriter(csvfile, fieldnames=['Id','Label','Time Interval','affiliation','color'], dialect=excel_semicolon)
+      writer.writeheader()
+      for row in self.df_author:
+        writer.writerow({'Id': row['Id'],
+          'Label': row['Label'],
+          'Time Interval': f'<{row["start"],row["stop"]}>',
+          'affiliation': row['affiliation'],
+          'color': row['color']
+        })
+
+    with open("data\\wos-rels.csv", 'w', encoding='utf-8-sig', newline='') as csvfile:
+      writer = csv.DictWriter(csvfile, fieldnames=['Source', 'Target', 'Time Interval'], dialect=excel_semicolon)
+      writer.writeheader()
+      for row in self.df_rel:
+        writer.writerow(
+          {'Source': row['source'],
+          'Target': row['target'],
+          'Time Interval': f"<[{row['Time Interval'][0]},{row['Time Interval'][1]}]>"
+          }
+        )
+
+
+  @timeit
+  def save_df_to_csv(self):
+    self.df_rel.to_csv("data\\wos-rels.csv", index=False, sep=';')
+    self.df_author.to_csv("data\\wos-author.csv", index=False, sep=';')
+            
   @timeit  
   def write_gexf(self, outfile="data\\wos.gexf", version='1.2draft'):
     logging.debug(f"Salvando rede social no arquivo: {outfile}")
-    nx.write_gexf(self.coauthors, outfile, version=version)
-
-  @timeit
-  def merge_nodes(self):
-    for node in self.coauthors.nodes_iter():
-      for alias in list(self.generate_abbreviations(node)):
-        if self.coauthors.has_node(alias):
-          logging.debug(f"Merging nodes {node} {self.coauthors.node[alias]}")
-          self.coauthors = nx.contracted_nodes(self.coauthors, node, [n for n in self.coauthors.nodes() if n==alias][0])
+    raise NotImplementedError("Ainda não é possivel salvar o arquivo")
 
   def generate_abbreviations(self, name):
-    if name.find('.') > 0 or name.find(',') < 0 or name.count(',') > 1:
+    '''
+    @description: Gera as possíveis abreviações usadas por um autor para o nome de citacao
+    '''
+    if name.find('.') > 0:
       return
     name = name.strip()
     surname = ''
     first_name = ''
     try:
-      (surname, first_name) = name.split(',')
+      surname, first_name, = name.split(',')
     except ValueError:
       print("Tentativa de dividir ", name)
-      raise("Erro ao processar nome para abreviação")
-    first_name = first_name.strip() 
+      first_name = name[:name.find(' ')]
+      surname = name[name.find(' ')+1:]
+     
     space_index = first_name.find(' ')
     prefix = surname+', '
     if space_index > 0:
@@ -132,7 +236,23 @@ class WoS(object):
     else:
       yield f"{prefix}{first_name[0]}."
       
-    
+
+  @staticmethod
+  def comparacao_compacta(nome1: str, nome2: str) -> bool:
+    translation = {' ': None, '.': None}
+    nome1 = nome1.translate(translation)
+    nome2 = nome2.translate(translation)
+
+    tokens1 = nome1.split(',')
+    tokens2 = nome2.split(',')
+
+    if tokens1[0] != tokens2[0]:
+        return False
+    if "".join(filter(str.isupper, [c for s in tokens1[1:] for c in s])) == "".join(filter(str.isupper, [c for s in tokens2[1:] for c in s])):
+        return True
+    return False
+        
+     
   @staticmethod
   def create_aliases_index():
     '''
