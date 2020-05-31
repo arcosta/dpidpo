@@ -56,9 +56,9 @@ class WoS(object):
       return
 
     logging.debug(
-      "Carregando os seguintes arquivos "+str(glob.glob(os.path.join('data', "savedrecs-3*.txt")))
+      "Carregando os seguintes arquivos "+str(glob.glob(os.path.join('data', "savedrecs-*.txt")))
       )
-    df = pd.concat(
+    df_raw = pd.concat(
       map(
         lambda file: pd.read_csv(file, 
                         sep='\t', 
@@ -69,10 +69,19 @@ class WoS(object):
                         na_values="", 
                         keep_default_na=False, 
                         na_filter=False), 
-        glob.glob(os.path.join('data', "savedrecs-3*.txt"))
+        glob.glob(os.path.join('data', "savedrecs-*.txt"))
         )
       )      
-      
+
+    filter_years = list(range(1964, 2010))
+    
+    logging.debug(f"Raw DataFrame shape: {df_raw.shape}")
+
+    logging.debug(f"Filtrando publicações para os anos {filter_years}")
+    
+    df = df_raw[pd.to_numeric(df_raw.PY, downcast='integer').isin(filter_years)]
+    del df_raw
+
     logging.debug(f"DataFrame shape: {df.shape}")
 
     logging.debug("Resolvendo filiações")
@@ -107,7 +116,6 @@ class WoS(object):
         current_author = author_dict[author]
         author_label = aliases_index.get(author, author)
 
-
         if author_label != author:
           logging.debug("Match de alias !!!")
         try:
@@ -120,7 +128,7 @@ class WoS(object):
                 'start':start,
                 'stop':stop,
                 'affiliation':aff,
-                'color': '#00FF00'}
+                'unb': 'True'}
                 )
           else:
             self.df_author.append(
@@ -130,7 +138,7 @@ class WoS(object):
                 'start':start,
                 'stop':stop,
                 'affiliation':aff,
-                'color': '#0000FF'}
+                'unb': 'False'}
                 )
         except KeyError:
           self.df_author.append(
@@ -140,13 +148,13 @@ class WoS(object):
                 'start':start,
                 'stop':stop,
                 'affiliation':'',
-                'color': '#000000'}
+                'unb': 'False'}
                 )
-
       for author in authors:
         for v in authors:
           if author != v:
             self.df_rel.append({'source':author_dict[author], 'target': author_dict[v], 'Time Interval': [start, stop]})
+    # Serializa as listas de autores e relacionamentos
     with open('rels.pickle', 'wb') as rels_file:
       pickle.dump(self.df_rel, rels_file)
     with open('authors.pickle', 'wb') as authors_file:
@@ -156,35 +164,38 @@ class WoS(object):
   def consolidate_authors(self):
     logging.debug("Consolidating authors ...")
     for author in self.df_author:
+      sinonimos = list()
       for author_inner in self.df_author:
         if (self.comparacao_compacta(author['Label'], author_inner['Label'])):
-          author['also_known_as'].append(author_inner['Label'])
-          if author_inner['start'] < author['start']:
-            author['start'] = author_inner['start']
-          if author_inner['stop'] > author['stop']:
-            author['stop'] = author_inner['stop']
-          self.df_author.remove(author_inner)
-    
-    logging.debug("Updating relationships")
-    #Atualiza o nome do autores nos relacionamentos
-    for rel in self.df_rel:
-      for author in self.df_author:
-        if rel['source'] in author['also_known_as']:
-          rel['source'] = author['Id']
-        if rel['target'] in author['also_known_as']:
-          rel['target'] = author['Id']
+          sinonimos.append(author_inner)
+      if len(sinonimos) == 0:
+        continue
+      start = min([x['start'] for x in sinonimos])
+      stop = max([x['stop'] for x in sinonimos])
+      mantem = max(sinonimos, key=lambda x:len(x['Label']))
+
+      self.df_author[self.df_author.index(mantem)]['start']=start
+      self.df_author[self.df_author.index(mantem)]['stop']=stop
+      sinonimos.remove(mantem)
+      [self.df_author.remove(x) for x in sinonimos]
+
+      for rel in self.df_rel:
+        if rel['source'] in [x['Id'] for x in sinonimos]:
+          rel['source'] = mantem['Id']
+        if rel['target'] in [x['Id'] for x in sinonimos]:
+          rel['target'] = mantem['Id']
 
   @timeit
   def save_to_csv(self):
     with open("data\\wos-author.csv", 'w', encoding='utf-8-sig', newline='') as csvfile:
-      writer = csv.DictWriter(csvfile, fieldnames=['Id','Label','Time Interval','affiliation','color'], dialect=excel_semicolon)
+      writer = csv.DictWriter(csvfile, fieldnames=['Id','Label','Time Interval','affiliation','unb'], dialect=excel_semicolon)
       writer.writeheader()
       for row in self.df_author:
         writer.writerow({'Id': row['Id'],
           'Label': row['Label'],
-          'Time Interval': f'<{row["start"],row["stop"]}>',
+          'Time Interval': f'<[{row["start"]},{row["stop"]}]>',
           'affiliation': row['affiliation'],
-          'color': row['color']
+          'unb': row['unb']
         })
 
     with open("data\\wos-rels.csv", 'w', encoding='utf-8-sig', newline='') as csvfile:
@@ -198,12 +209,6 @@ class WoS(object):
           }
         )
 
-
-  @timeit
-  def save_df_to_csv(self):
-    self.df_rel.to_csv("data\\wos-rels.csv", index=False, sep=';')
-    self.df_author.to_csv("data\\wos-author.csv", index=False, sep=';')
-            
   @timeit  
   def write_gexf(self, outfile="data\\wos.gexf", version='1.2draft'):
     logging.debug(f"Salvando rede social no arquivo: {outfile}")
