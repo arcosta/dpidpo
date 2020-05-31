@@ -12,7 +12,7 @@ def main():
     print(" *** Loading data ***")
     wos.load_csv()
 
-    #wos.consolidate_authors()
+    wos.consolidate_authors()
 
     print(" *** Generating graph file ***")
     #wos.write_gexf()

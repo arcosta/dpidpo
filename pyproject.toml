@@ -8,6 +8,7 @@ authors = ["Aurelio Costa <arcosta@gmail.com>"]
 python = "^3.6"
 requests = "^2.23.0"
 elsapy = "^0.5.0"
+dynaconf = "^2.2.3"
 
 [tool.poetry.scripts]
 my-script = "dpidpo:main"
