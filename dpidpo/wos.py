@@ -30,13 +30,14 @@ def timeit(method):
 
 
 class WoS(object):
-  def __init__(self):
+  def __init__(self, filtro_de_ano = list()):
     self.pd_authors = 'AF'
     self.pd_affiliation = 'C1'
     self.pd_year = 'PY'
 
-    self.df_rel = list()
-    self.df_author = list()
+    self.filtro_de_ano = filtro_de_ano if len(filtro_de_ano) == 2 else Exception("Erro ao configurar o filtro de anos")
+    self.df_rel = dict()
+    self.df_author = dict()
     
   def match(self, query=''):
     result = [name for name in self.generate_abbreviations(query) if self.coauthors.has_node(name)]
@@ -47,11 +48,12 @@ class WoS(object):
       return result[0]
 
   def load_csv(self):
-    if os.path.exists('rels.pickle') and os.path.exists('author.pickle'):
+    files_suffix = f"{self.filtro_de_ano[0]}-{self.filtro_de_ano[1]}"
+    if os.path.exists(f'rels-{files_suffix}.pickle') and os.path.exists(f'author-{files_suffix}.pickle'):
       logging.info("Carregando lista de autores e relacionamentos do cache")
-      with open('rels.pickle', 'rb') as rels_file:
+      with open(f'rels-{files_suffix}.pickle', 'rb') as rels_file:
         self.df_rel = pickle.load(rels_file)
-      with open('authors.pickle', 'rb') as authors_file:
+      with open(f'authors-{files_suffix}.pickle', 'rb') as authors_file:
         self.df_author = pickle.load(authors_file)
       return
 
@@ -73,7 +75,7 @@ class WoS(object):
         )
       )      
 
-    filter_years = list(range(1964, 2010))
+    filter_years = list(range(int(self.filtro_de_ano[0]), int(self.filtro_de_ano[1])))
     
     logging.debug(f"Raw DataFrame shape: {df_raw.shape}")
 
@@ -94,7 +96,6 @@ class WoS(object):
     df_publications = df[[self.pd_authors, self.pd_year]]
     del df
 
-    author_dict = {}
     rels = list()
     author_idx = 1
     for row in df_publications.values:
@@ -109,103 +110,94 @@ class WoS(object):
       stop = pub_year       
         
       for author in authors:
-        if author not in author_dict.keys():
-          author_dict[author] = author_idx
+        if author not in self.df_author.keys():
+          self.df_author[author] = {
+            'Id': author_idx, 
+            'Label': author,
+            'also_known_as': aliases_index.get(author, list()),
+            'start':start,
+            'stop':stop,
+            'affiliation':affiliations.get(author, None)
+            }
           author_idx += 1
+        else:
+          current_author = self.df_author[author]
 
-        current_author = author_dict[author]
-        author_label = aliases_index.get(author, author)
+          if current_author['start'] > start:
+            current_author['start'] = start
+          if current_author['stop'] < stop:
+            current_author['stop'] = stop
+          if current_author['affiliation'] is None:
+            current_author['affiliation'] = affiliations.get(author, None)
 
-        if author_label != author:
-          logging.debug("Match de alias !!!")
-        try:
-          aff = affiliations[author]
-          if aff.find('Univ Brasilia') >=0:
-            self.df_author.append(
-              {'Id':current_author,
-              'Label': author,
-              'also_known_as': list(), 
-                'start':start,
-                'stop':stop,
-                'affiliation':aff,
-                'unb': 'True'}
-                )
-          else:
-            self.df_author.append(
-              {'Id':current_author,
-              'Label': author, 
-              'also_known_as': list(),
-                'start':start,
-                'stop':stop,
-                'affiliation':aff,
-                'unb': 'False'}
-                )
-        except KeyError:
-          self.df_author.append(
-              {'Id':current_author,
-              'Label': author, 
-              'also_known_as': list(),
-                'start':start,
-                'stop':stop,
-                'affiliation':'',
-                'unb': 'False'}
-                )
+          self.df_author[author] = current_author
+                
       for author in authors:
         for v in authors:
           if author != v:
-            self.df_rel.append({'source':author_dict[author], 'target': author_dict[v], 'Time Interval': [start, stop]})
+            key = f"{author}{v}"
+            if key not in self.df_rel.keys():
+              self.df_rel[key] = {
+              'source':self.df_author[author]['Id'], 
+              'target': self.df_author[v]['Id'], 
+              'Time Interval': [(start, stop)]
+              }
+            else:
+              self.df_rel[key]['Time Interval'].append((start, stop))
+
     # Serializa as listas de autores e relacionamentos
-    with open('rels.pickle', 'wb') as rels_file:
+    with open(f'rels-{files_suffix}.pickle', 'wb') as rels_file:
       pickle.dump(self.df_rel, rels_file)
-    with open('authors.pickle', 'wb') as authors_file:
+    with open(f'authors-{files_suffix}.pickle', 'wb') as authors_file:
       pickle.dump(self.df_author, authors_file)
 
   @timeit
   def consolidate_authors(self):
-    logging.debug("Consolidating authors ...")
-    for author in self.df_author:
+    logging.debug("Consolidando autores ...")
+    for author in self.df_author.keys():
       sinonimos = list()
-      for author_inner in self.df_author:
-        if (self.comparacao_compacta(author['Label'], author_inner['Label'])):
-          sinonimos.append(author_inner)
+      for author_inner in self.df_author.keys():
+        if (self.comparacao_compacta(author, author_inner)):
+          sinonimos.append(self.df_author[author_inner])
       if len(sinonimos) == 0:
         continue
       start = min([x['start'] for x in sinonimos])
       stop = max([x['stop'] for x in sinonimos])
       mantem = max(sinonimos, key=lambda x:len(x['Label']))
 
-      self.df_author[self.df_author.index(mantem)]['start']=start
-      self.df_author[self.df_author.index(mantem)]['stop']=stop
+      self.df_author[mantem['Label']]['start']=start
+      self.df_author[mantem['Label']]['stop']=stop
       sinonimos.remove(mantem)
-      [self.df_author.remove(x) for x in sinonimos]
+      map(lambda x: self.df_author[x['Label']], sinonimos)
 
-      for rel in self.df_rel:
-        if rel['source'] in [x['Id'] for x in sinonimos]:
-          rel['source'] = mantem['Id']
-        if rel['target'] in [x['Id'] for x in sinonimos]:
-          rel['target'] = mantem['Id']
+      for rel_key in self.df_rel.keys():
+        if self.df_rel[rel_key]['source'] in [x['Id'] for x in sinonimos]:
+          self.df_rel[rel_key]['source'] = mantem['Id']
+        if self.df_rel[rel_key]['target'] in [x['Id'] for x in sinonimos]:
+          self.df_rel[rel_key]['target'] = mantem['Id']
 
   @timeit
   def save_to_csv(self):
-    with open("data\\wos-author.csv", 'w', encoding='utf-8-sig', newline='') as csvfile:
-      writer = csv.DictWriter(csvfile, fieldnames=['Id','Label','Time Interval','affiliation','unb'], dialect=excel_semicolon)
+    files_suffix = f"{self.filtro_de_ano[0]}-{self.filtro_de_ano[1]}"
+    with open(f"data\\wos-author-{files_suffix}.csv", 'w', encoding='utf-8-sig', newline='') as csvfile:
+      writer = csv.DictWriter(csvfile, fieldnames=['Id','Label','Time Interval','affiliation','also_known_as'], dialect=excel_semicolon)
       writer.writeheader()
-      for row in self.df_author:
+      for key,row in self.df_author.items():
         writer.writerow({'Id': row['Id'],
           'Label': row['Label'],
           'Time Interval': f'<[{row["start"]},{row["stop"]}]>',
           'affiliation': row['affiliation'],
-          'unb': row['unb']
+          'also_known_as': row['also_known_as']
         })
 
-    with open("data\\wos-rels.csv", 'w', encoding='utf-8-sig', newline='') as csvfile:
+    with open(f"data\\wos-rels-{files_suffix}.csv", 'w', encoding='utf-8-sig', newline='') as csvfile:
       writer = csv.DictWriter(csvfile, fieldnames=['Source', 'Target', 'Time Interval'], dialect=excel_semicolon)
       writer.writeheader()
-      for row in self.df_rel:
+      for key,row in self.df_rel.items():
         writer.writerow(
           {'Source': row['source'],
           'Target': row['target'],
-          'Time Interval': f"<[{row['Time Interval'][0]},{row['Time Interval'][1]}]>"
+          'Time Interval': "<"+";".join([str(list(x)) for x in row['Time Interval']])+">"
           }
         )
 
