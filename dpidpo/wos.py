@@ -39,14 +39,6 @@ class WoS(object):
     self.df_rel = dict()
     self.df_author = dict()
     
-  def match(self, query=''):
-    result = [name for name in self.generate_abbreviations(query) if self.coauthors.has_node(name)]
-
-    if len(result) == 0:
-      return query
-    else:
-      return result[0]
-
   def load_csv(self):
     files_suffix = f"{self.filtro_de_ano[0]}-{self.filtro_de_ano[1]}"
     if os.path.exists(f'rels-{files_suffix}.pickle') and os.path.exists(f'author-{files_suffix}.pickle'):
